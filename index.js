@@ -10,7 +10,7 @@ const app = express()
 //use app
 app.use(cookieParser())
 app.use(cors({
-    origin: [process.env.HOST,"https://rachelapps.netlify.app/"],
+    origin: process.env.HOST,
     credentials: true
 }))
 
