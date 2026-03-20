@@ -2,16 +2,16 @@ const db = require('../../config/db')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
-async function login(req,res,next) {
+async function login(req, res, next) {
     try {
-        const {email,password} = req.body
+        const { email, password } = req.body
         const [rows] = await db.query(
             "SELECT * FROM users WHERE email = ?",
             [email]
         )
         if (rows.length === 0) {
             return res.status(401).json({
-                message:"User not found"
+                message: "User not found"
             })
         }
         const user = rows[0]
@@ -21,25 +21,25 @@ async function login(req,res,next) {
         )
         if (!match) {
             return res.status(401).json({
-                message:"Wrong password"
+                message: "Wrong password"
             })
         }
         const token = jwt.sign(
             {
-                id:user.id,
-                name:user.username,
-                avatar:user.avatar,
-                bio:user.bio,
-                email:user.email,
-                role:user.role
+                id: user.id,
+                name: user.username,
+                avatar: user.avatar,
+                bio: user.bio,
+                email: user.email,
+                role: user.role
             },
             process.env.JWT_SECRET,
-            {expiresIn:"7d"}
+            { expiresIn: "7d" }
         )
-        res.cookie("token", token,{
+        res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "lax",
-            secure: false,
+            sameSite: "None",
+            secure: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
         res.json({
@@ -51,7 +51,7 @@ async function login(req,res,next) {
 }
 
 // async function logout(req,res,next) {
-    
+
 // }
 
 
@@ -79,15 +79,15 @@ async function login(req,res,next) {
 
 // }
 
-function me(req,res,next) {
+function me(req, res, next) {
     const user = req.user
     res.json(user)
 }
 
-function logout(req,res){
+function logout(req, res) {
     res.clearCookie("token")
     res.json({
-    message:"Logout success"
+        message: "Logout success"
     })
 }
 module.exports = {
